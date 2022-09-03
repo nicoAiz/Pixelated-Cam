@@ -41,13 +41,13 @@ function draw() {
         background('#000')  
 
         const scale = height / oCanvas.height
-        const pikachuCenter = getPixelsClusterCenter(newImage, 192, 192, 96, 10000)
+        const imageCenter = getPixelsClusterCenter(newImage, 192, 192, 96, 10000)
 
-        pikachuCenter[0] *= oCanvas.width * scale / newImage.width
-        pikachuCenter[1] *= oCanvas.height * scale / newImage.height
+        imageCenter[0] *= oCanvas.width * scale / newImage.width
+        imageCenter[1] *= oCanvas.height * scale / newImage.height
 
-        const offsetX = oCanvas.width * scale * 0.5 - pikachuCenter[0]
-        const offsetY = oCanvas.height * scale * 0.5 - pikachuCenter[1]
+        const offsetX = oCanvas.width * scale * 0.5 - imageCenter[0]
+        const offsetY = oCanvas.height * scale * 0.5 - imageCenter[1]
         drawImage(newImage, offsetX + (width - oCanvas.width * scale) / 2, offsetY, oCanvas.width * scale, oCanvas.height * scale)
 
         draw()
