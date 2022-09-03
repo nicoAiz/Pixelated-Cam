@@ -3,9 +3,9 @@ const width  = canvas.width
 const height = canvas.height
 ctx.imageSmoothingEnabled = false
 
-const video = document.createElement('video')
+let video = document.createElement('video')
 const oCanvas = document.createElement('canvas')
-let oCtx
+const oCtx = oCanvas.getContext('2d')
 
 const pal = new Array(256).fill([0, 0, 0]).map(i => i.map(c => random(255)))
 
@@ -16,10 +16,16 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: false })
     video.onloadeddata = () => {
       oCanvas.width  = video.videoWidth
       oCanvas.height = video.videoHeight
-      oCtx = oCanvas.getContext('2d')
-      requestAnimationFrame(draw)
+      draw()
     }
-  }).catch(err => console.error(err))
+  }).catch(err => {
+    const image = loadImage('images/example-image.jpeg', () => {
+      video = image
+      oCanvas.width  = image.width
+      oCanvas.height = image.height
+      draw()
+    })
+  })
 
 function draw() {
   useContext(oCtx)
@@ -44,7 +50,7 @@ function draw() {
         const offsetY = oCanvas.height * scale * 0.5 - pikachuCenter[1]
         drawImage(newImage, offsetX + (width - oCanvas.width * scale) / 2, offsetY, oCanvas.width * scale, oCanvas.height * scale)
 
-        requestAnimationFrame(draw)
+        draw()
       }
     }
   }
