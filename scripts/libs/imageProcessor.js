@@ -20,7 +20,7 @@ function iP_forEachPixel(img, callback) {
   return loadImage(canvas.toDataURL())
 }
 
-function pixelateImage(img, rez) {
+function iP_pixelateImage(img, rez) {
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
   canvas.width = img.width * rez
@@ -32,7 +32,7 @@ function pixelateImage(img, rez) {
   return newImg
 }
 
-function removeColor(img, r = 0, g = 255, b = 0, threshold = 10) {
+function iP_removeColor(img, r = 0, g = 255, b = 0, threshold = 10) {
   const thresholdSquared = threshold * threshold
   return iP_forEachPixel(img, p => {
     if ((p[0] - r)**2 + (p[1] - g)**2 + (p[2] - b)**2 <= thresholdSquared)
@@ -41,7 +41,7 @@ function removeColor(img, r = 0, g = 255, b = 0, threshold = 10) {
   })
 }
 
-function decreasePalette(img, colors) {
+function iP_decreasePalette(img, colors) {
   return iP_forEachPixel(img, p => {
     p[0] = Math.floor(p[0] / colors) * colors
     p[1] = Math.floor(p[1] / colors) * colors
@@ -50,7 +50,7 @@ function decreasePalette(img, colors) {
   })
 }
 
-function usePalette(img, palette) {
+function iP_usePalette(img, palette) {
   return iP_forEachPixel(img, p => {
     let closestColor = null
     let closestDistance = 999999
@@ -73,7 +73,7 @@ function usePalette(img, palette) {
   })
 }
 
-function getPixelsCluster(img, r, g, b, threshold) {
+function iP_getPixelsCluster(img, r, g, b, threshold) {
   const pixelsFound = []
   const thresholdSquared = threshold * threshold
   iP_forEachPixel(img, (p, i) => {
@@ -85,7 +85,7 @@ function getPixelsCluster(img, r, g, b, threshold) {
   return pixelsFound
 }
 
-function getPixelsClusterCenter(img, r, g, b, threshold) {
+function iP_getPixelsClusterCenter(img, r, g, b, threshold) {
   const pixelsCluster = getPixelsCluster(img, r, g, b, threshold)
   const center = [0, 0]
   for (let p of pixelsCluster) {

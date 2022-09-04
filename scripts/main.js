@@ -35,13 +35,13 @@ async function draw() {
   drawImage(video, 0, 0, oCanvas.width, oCanvas.height)
 
   // Lower the resolution
-  let newImage = pixelateImage(oCanvas, 0.16)
+  let newImage = iP_pixelateImage(oCanvas, 0.16)
   newImage.onload = () => {
     // Decrease color space
-    newImage = decreasePalette(newImage, 48)
+    newImage = iP_decreasePalette(newImage, 48)
     newImage.onload = () => {
       // Set new palette, currently unused
-      newImage = usePalette(newImage, [])
+      newImage = iP_usePalette(newImage, [])
       newImage.onload = () => {
         // Draw the result image scaled to screen
         const scale = height / oCanvas.height
