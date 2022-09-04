@@ -1,5 +1,4 @@
 const { canvas, ctx } = createCanvasContext(innerWidth, innerHeight)
-ctx.imageSmoothingEnabled = false
 let width  = canvas.width
 let height = canvas.height
 
@@ -43,7 +42,10 @@ async function draw() {
   canvas.width  = width  = innerWidth
   canvas.height = height = innerHeight
   const scale = width / oCanvas.width < height / oCanvas.height ? width / oCanvas.width : height / oCanvas.height
-  
+
+  ctx.imageSmoothingEnabled  = false
+  oCtx.imageSmoothingEnabled = false
+
   useContext(ctx)
   background('#000')  
   drawImage(resultImage, (width - oCanvas.width * scale) / 2, (height - oCanvas.height * scale) / 2, oCanvas.width * scale, oCanvas.height * scale)
