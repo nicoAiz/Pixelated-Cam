@@ -3,13 +3,15 @@
 // Experiment image manipulation library
 // v0.0.1 [03/09/2022]
 // - Initial state
+// v0.0.2 [04/09/2022]
+// - Switched to async functions
 
-async function iP_forEachPixel(img, callback) {
+async function iP_forEachPixel(image, callback) {
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
-  canvas.width = img.width
-  canvas.height = img.height
-  ctx.drawImage(img, 0, 0)
+  canvas.width = image.width
+  canvas.height = image.height
+  ctx.drawImage(image, 0, 0)
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
   let d = imageData.data
 
@@ -25,30 +27,34 @@ async function iP_forEachPixel(img, callback) {
   })
 }
 
-async function iP_pixelateImage(img, rez) {
+async function iP_pixelateImage(image, resolution) {
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
-  canvas.width = img.width * rez
-  canvas.height = img.height * rez
-  ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-  ctx.putImageData(imgData, 0, 0)
-  const newImg = loadImage(canvas.toDataURL())
-  return newImg
+  canvas.width = image.width * resolution
+  canvas.height = image.height * resolution
+  ctx.drawImage(image, 0, 0, canvas.width, canvas.height)
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+  ctx.putImageData(imageData, 0, 0)
+
+  return new Promise((resolve, reject) => {
+    const newImage = loadImage(canvas.toDataURL(), () => {
+      resolve(newImage)
+    })
+  })
 }
 
-async function iP_removeColor(img, r = 0, g = 255, b = 0, threshold = 10) {
+async function iP_removeColor(image, r = 0, g = 255, b = 0, threshold = 10) {
   const thresholdSquared = threshold * threshold
-  
-  return iP_forEachPixel(img, p => {
+
+  return iP_forEachPixel(image, p => {
     if ((p[0] - r)**2 + (p[1] - g)**2 + (p[2] - b)**2 <= thresholdSquared)
       p[3] = 0
     return p
   })
 }
 
-async function iP_decreasePalette(img, colors) {
-  return iP_forEachPixel(img, p => {
+async function iP_decreasePalette(image, colors) {
+  return iP_forEachPixel(image, p => {
     p[0] = Math.floor(p[0] / colors) * colors
     p[1] = Math.floor(p[1] / colors) * colors
     p[2] = Math.floor(p[2] / colors) * colors
@@ -56,8 +62,8 @@ async function iP_decreasePalette(img, colors) {
   })
 }
 
-async function iP_usePalette(img, palette) {
-  return iP_forEachPixel(img, p => {
+async function iP_usePalette(image, palette) {
+  return iP_forEachPixel(image, p => {
     let closestColor = null
     let closestDistance = 999999
 
@@ -79,21 +85,21 @@ async function iP_usePalette(img, palette) {
   })
 }
 
-function iP_getPixelsCluster(img, r, g, b, threshold) {
+function iP_getPixelsCluster(image, r, g, b, threshold) {
   const pixelsFound = []
   const thresholdSquared = threshold * threshold
 
-  iP_forEachPixel(img, (p, i) => {
+  iP_forEachPixel(image, (p, i) => {
     if ((p[0] - r)**2 + (p[1] - g)**2 + (p[2] - b)**2 <= thresholdSquared)
-      pixelsFound.push([(i / 4) % img.width, floor(i / 4 / img.width)])
+      pixelsFound.push([(i / 4) % image.width, floor(i / 4 / image.width)])
     return p
   })
 
   return pixelsFound
 }
 
-function iP_getPixelsClusterCenter(img, r, g, b, threshold) {
-  const pixelsCluster = getPixelsCluster(img, r, g, b, threshold)
+function iP_getPixelsClusterCenter(image, r, g, b, threshold) {
+  const pixelsCluster = getPixelsCluster(image, r, g, b, threshold)
   const center = [0, 0]
   for (let p of pixelsCluster) {
     center[0] += p[0]
