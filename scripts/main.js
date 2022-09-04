@@ -1,7 +1,7 @@
 const { canvas, ctx } = createCanvasContext(innerWidth, innerHeight)
-const width  = canvas.width
-const height = canvas.height
 ctx.imageSmoothingEnabled = false
+let width  = canvas.width
+let height = canvas.height
 
 let video = document.createElement('video')
 const oCanvas = document.createElement('canvas')
@@ -39,10 +39,13 @@ async function draw() {
   resultImage = await iP_decreasePalette(resultImage, 48) // 'Snap' colors to a palette of size 48
   resultImage = await iP_usePalette(resultImage, []) // 'Snap' colors to a palette, currently unused
 
-  // Draw the result image scaled to screen
-  const scale = height / oCanvas.height
+  // Scaling canvas properly to the screen
+  canvas.width  = width  = innerWidth
+  canvas.height = height = innerHeight
+  const scale = width / oCanvas.width < height / oCanvas.height ? width / oCanvas.width : height / oCanvas.height
+  
   useContext(ctx)
   background('#000')  
-  drawImage(resultImage, (width - oCanvas.width * scale) / 2, 0, oCanvas.width * scale, oCanvas.height * scale)
+  drawImage(resultImage, (width - oCanvas.width * scale) / 2, (height - oCanvas.height * scale) / 2, oCanvas.width * scale, oCanvas.height * scale)
   draw()
 }
