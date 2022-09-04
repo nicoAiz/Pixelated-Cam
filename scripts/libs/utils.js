@@ -3,9 +3,12 @@
 // Common use functions library
 // v0.1.0 [30/07/2022]
 // v0.1.1 [28/08/2022]
+// v0.1.2 [04/09/2022]
+// - Fixed n-dimensional distance function
+// - Added n-dimensional distance squared function
 
-/// Common DOM and loading functions
-/// Loads an image
+// Common DOM and loading functions
+// Loads an image
 function loadImage(src, callback = ()=>{}) {
   const img = new Image()
   img.src = src
@@ -14,7 +17,7 @@ function loadImage(src, callback = ()=>{}) {
   return img
 }
 
-/// Same as above, but async
+// Same as above, but async
 async function loadImageAsync(src) {
   return new Promise((resolve, reject) => {
     let image = new Image()
@@ -24,7 +27,7 @@ async function loadImageAsync(src) {
   })
 }
 
-/// Loads a list of images
+// Loads a list of images
 function loadImages(imagesList, callback = ()=>{}, imagesLoaded = []) {
   if (imagesList.length === 0) return callback(imagesLoaded)
 
@@ -34,7 +37,7 @@ function loadImages(imagesList, callback = ()=>{}, imagesLoaded = []) {
   })
 }
 
-/// Same as above, but async
+// Same as above, but async
 async function loadImagesAsync(imagesList, callback = ()=>{}, imagesLoaded = []) {
   if (imagesList.length === 0) return callback(imagesLoaded)
 
@@ -45,7 +48,7 @@ async function loadImagesAsync(imagesList, callback = ()=>{}, imagesLoaded = [])
     }, () => console.error('Image could not be loaded.'))
 }
 
-/// Loads a script
+// Loads a script
 function loadScript(src, callback = ()=>{}) {
   const scriptEl = document.createElement('script')
   scriptEl.src = src
@@ -55,7 +58,7 @@ function loadScript(src, callback = ()=>{}) {
   document.head.append(scriptEl)
 }
 
-/// Loads a list of scripts
+// Loads a list of scripts
 function loadScripts(scriptsList, callback = ()=>{}, scriptsLoaded = []) {
   if (scriptsList.length === 0) return callback(scriptsLoaded)
 
@@ -65,7 +68,7 @@ function loadScripts(scriptsList, callback = ()=>{}, scriptsLoaded = []) {
   })
 }
 
-/// Deletes all event listeners from an element
+// Deletes all event listeners from an element
 function removeAllListeners(element) {
   const cloned = element.cloneNode(true)
   element.parentNode.replaceChild(cloned, element)
@@ -73,7 +76,7 @@ function removeAllListeners(element) {
   return cloned
 }
 
-/// Creates an element
+// Creates an element
 const createElement = ({ classes = ['easyJS-element'], tag = 'div'} = {}, append = false)=>{
   const element = document.createElement(tag)
   element.classList.add(...classes)
@@ -81,7 +84,7 @@ const createElement = ({ classes = ['easyJS-element'], tag = 'div'} = {}, append
   return element
 }
 
-/// Creates a Canvas element
+// Creates a Canvas element
 const createCanvas = ({ classes = ['easyJS-canvas'], width = 256, height = 256} = {}, append = false)=>{
   const canvas = document.createElement('canvas')
   canvas.width = width
@@ -91,7 +94,7 @@ const createCanvas = ({ classes = ['easyJS-canvas'], width = 256, height = 256} 
   return canvas
 }
 
-/// Creates a Button element
+// Creates a Button element
 const createButton = ({ classes = ['easyJS-button'], text = '', onclick = () => {console.log('Button pressed!')}} = {}, append = false)=>{
   const button = document.createElement('button')
   button.innerText = text
@@ -101,7 +104,7 @@ const createButton = ({ classes = ['easyJS-button'], text = '', onclick = () => 
   return button
 }
 
-/// Creates a P element
+// Creates a P element
 const createP = ({ classes = ['easyJS-p'], text = ''} = {}, append = false)=>{
   const p = document.createElement('p')
   p.innerText = text
@@ -110,7 +113,7 @@ const createP = ({ classes = ['easyJS-p'], text = ''} = {}, append = false)=>{
   return p
 }
 
-/// Creates a Input[range] element
+// Creates a Input[range] element
 const createSlider = ({ classes = ['easyJS-slider'], min = 0, max = 10, value = 0} = {}, append = false)=>{
   const slider = document.createElement('input')
   slider.type = 'range'
@@ -128,7 +131,7 @@ const createSlider = ({ classes = ['easyJS-slider'], min = 0, max = 10, value = 
   }
 }
 
-/// Creates a divider (spacing element)
+// Creates a divider (spacing element)
 function createDivider(parent) {
   const divider = createElement('div')
   divider.style = `
@@ -157,30 +160,30 @@ function imageDataToImage(imageData) {
   return image
 }
 
-/// Common Math functions
-/// Linear interpolation
+// Common Math functions
+// Linear interpolation
 function lerp(a, b, t) {
   return a + (b - a) * t
 }
 
-/// Converts degree to radians
+// Converts degree to radians
 function radians(deg) {
   if (deg < 0) deg = 360 + deg
   if (deg >= 360) deg = deg - 360
   return deg * Math.PI / 180
 }
 
-/// Converts radians to degree
+// Converts radians to degree
 function degree(rad) {
   return rad / Math.PI * 180
 }
 
-/// Returns if a value is in a range
+// Returns if a value is in a range
 function inRange(value, min, max) {
   return (value >= min && value <= max)
 }
 
-/// Returns the sign of a number
+// Returns the sign of a number
 function sign(n) {
   return n > 0 ? 1 : -1
 }
@@ -189,17 +192,17 @@ function signMin(n) {
   return n > 0 ? 0.00001 : -0.00001
 }
 
-/// Clamps a value to a range
+// Clamps a value to a range
 function clamp(value, min, max) {
   return value < min ? min : value > max ? max : value
 }
 
-/// Maps a range to another range
+// Maps a range to another range
 function map(value, min, max, toMin, toMax) {
   return toMin + (value - min) / (max - min) * (toMax - toMin)
 }
 
-/// Math constants
+// Math constants
 const PI = Math.PI
 const TWO_PI = 2 * PI
 const SQRT2 = Math.SQRT2
@@ -216,7 +219,7 @@ const RADIANS_270 = radians(270)
 const RADIANS_315 = radians(315)
 const RADIANS_MAX = radians(359.999)
 
-/// Math functions
+// Math functions
 const abs = Math.abs
 const min = Math.min
 const max = Math.max
@@ -236,13 +239,13 @@ const sqrt = Math.sqrt
 const cbrt = Math.cbrt
 const hypot = Math.hypot
 
-/// Returns the angle from one point (x1, y1) to another point (x2, y2)
+// Returns the angle from one point (x1, y1) to another point (x2, y2)
 function pointToDirection(x1, y1, x2, y2) {
   let theta = -atan2(y2 - y1, x2 - x1)
   return theta < 0 ? theta + TWO_PI : theta
 }
 
-/// Same as above, another implementation, in degrees
+// Same as above, another implementation, in degrees
 function pointToDirection2(cx, cy, ex, ey) {
   let dy = ey - cy
   let dx = ex - cx
@@ -252,14 +255,14 @@ function pointToDirection2(cx, cy, ex, ey) {
   return theta
 }
 
-/// Same as above, another implementation, in radians
+// Same as above, another implementation, in radians
 function pointToDirection3(x1, y1, x2, y2) {
   let n = Math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
   let w = (x2 - x1) / n
   return (Math.acos(w) * 180 / Math.PI * (y1 > y2 ? 1 : -1) || 0) * Math.PI / 180
 }
 
-/// Returns the distance between two points in 2D
+// Returns the distance between two points in 2D
 function distance(x1, y1, x2, y2) {
   if (['Object', 'Vector2'].includes(x1.constructor.name))
     return (y1 == null
@@ -269,18 +272,35 @@ function distance(x1, y1, x2, y2) {
   return Math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
 }
 
-/// Same as above, but squared
+// Same as above, but squared
 function distanceSquared(x1, y1, x2, y2) {
   return (x2 - x1)**2 + (y2 - y1)**2
 }
 
-/// Returns the distance between two points in N dimensions
+// Returns the distance between two points in N dimensions
 function distanceND(p1, p2) {
-  return Math.sqrt(p1.reduce((p, c, i) => p + (c - p2[i]))**2)
+  const length = p1.length
+  let sum = 0
+  
+  for (let i = 0; i < length; i++)
+    sum += (p1[i] - p2[i]) ** 2
+
+  return Math.sqrt(sum)
 }
 
-/// Common random and array/object functions
-/// Creates a 2D Array
+// Same as above, but squared
+function distanceNDSquared(p1, p2) {
+  const length = p1.length
+  let sum = 0
+  
+  for (let i = 0; i < length; i++)
+    sum += (p1[i] - p2[i]) ** 2
+
+  return sum
+}
+
+// Common random and array/object functions
+// Creates a 2D Array
 function createArray2D(cols, rows, placeholder = null) {
   const arr = []
 
@@ -294,12 +314,12 @@ function createArray2D(cols, rows, placeholder = null) {
   return arr
 }
 
-/// Axis Aligned Bounding Box intersection detection
+// Axis Aligned Bounding Box intersection detection
 function aabb(x1, y1, w1, h1, x2, y2, w2, h2) {
   return (x1 + w1) > x2 && x1 < (x2 + w2) && (y1 + h1) > y2 && y1 < (y2 + h2)
 }
 
-/// Simple helpers for miscellaneous utilities
+// Simple helpers for miscellaneous utilities
 const xy = (x,y) => ({x,y})
 const getClass = object => object.constructor.name
 
