@@ -30,8 +30,9 @@ async function iP_forEachPixel(image, callback) {
 async function iP_pixelateImage(image, resolution) {
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
-  canvas.width = image.width * resolution
-  canvas.height = image.height * resolution
+  const scale = resolution / max(image.width, image.height)
+  canvas.width = image.width * scale
+  canvas.height = image.height * scale
   ctx.drawImage(image, 0, 0, canvas.width, canvas.height)
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
   ctx.putImageData(imageData, 0, 0)
@@ -62,13 +63,57 @@ async function iP_decreasePalette(image, colors) {
   })
 }
 
+function iP_multiply(image, amount) {
+  return iP_forEachPixel(image, p => {
+    p[0] *= amount
+    p[1] *= amount
+    p[2] *= amount
+    return p
+  })
+}
+
 async function iP_usePalette(image, palette) {
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  canvas.width = image.width
+  canvas.height = image.height
+  ctx.drawImage(image, 0, 0)
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+  let d = imageData.data
+
+  for (let i = 0; i < d.length; i += 4) {
+    let closestColor = null
+    let closestDistance = 999999
+
+    for (let color of palette) {
+      const dist = distanceNDSquared(color, [d[i], d[i+1], d[i+2]])
+      if (dist < closestDistance) {
+        closestDistance = dist
+        closestColor = color
+      }
+    }
+
+    if (closestColor) {
+      d[i]   = closestColor[0]
+      d[i+1] = closestColor[1]
+      d[i+2] = closestColor[2]
+    }
+  }
+
+  ctx.putImageData(imageData, 0, 0)
+  
+  return new Promise((resolve, reject) => {
+    const image = loadImage(canvas.toDataURL(), () => {
+      resolve(image)
+    })
+  })
+
   return iP_forEachPixel(image, p => {
     let closestColor = null
     let closestDistance = 999999
 
     for (let color of palette) {
-      const d = distanceND(color, p)
+      const d = distanceNDSquared(color, [p[0], p[1], p[2]])
       if (d < closestDistance) {
         closestDistance = d
         closestColor = color
