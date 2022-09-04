@@ -3,35 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Pixel Art Cam</title>
-  <style>
-    html, body { margin: 0; padding: 0; width: 100vw; height: 100vh  }
-    body { background: black }
-    canvas, #actions { position: fixed }
-
-    #actions {
-      display: flex;
-      flex-direction: column;
-      margin: 1rem;
-      left: 0;
-      top: 0;
-      color: #fff;
-      z-index: 1
-    }
-
-    button {
-      padding: 0.8rem 2.4rem;
-      font-size: 12px;
-      background-color: #555;
-      color: #fff;
-      border: 2px solid #999;
-      border-radius: 0.2rem;
-      cursor: pointer
-    }
-
-    button:hover {
-      background-color: #777;
-    }
-  </style>
+  <link rel="stylesheet" href="css/style.css">
 
   <script src="scripts/libs/utils.js" defer></script>
   <script src="scripts/libs/canvasUtils.js" defer></script>
@@ -42,7 +14,14 @@
 </head>
 <body>
   <div id="actions">
-    <button id="upload-image"><img class="galery-icon" src="images/galery.svg"></img>Upload</button>
+    <label for="upload-image" class="btn-action">
+      <img class="icon" src="icons/galery.svg"></img>Upload</label>
+      <input type="file" name="upload-image" id="upload-image" accept="image/png, image/gif, image/jpeg"></input>
+    </label>
+    <label for="download-image" class="btn-action">
+      <img class="icon" src="icons/download.svg"></img>Download</label>
+      <input type="button" name="download-image" id="download-image"></input>
+    </label>
   </div>
 </body>
 </html>
