@@ -7,8 +7,11 @@ let video = document.createElement('video')
 const oCanvas = document.createElement('canvas')
 const oCtx = oCanvas.getContext('2d')
 
-const pal = new Array(256).fill([0, 0, 0]).map(i => i.map(c => random(255)))
+// Does nothing at the moment...
+const palette = new Array(256).fill([0, 0, 0]).map(i => i.map(c => random(255)))
 
+// Use webcam as source for effect
+// otherwise, use example.jpeg
 navigator.mediaDevices.getUserMedia({ video: true, audio: false })
   .then(rawData => {
     video.srcObject = rawData
@@ -19,7 +22,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: false })
       draw()
     }
   }).catch(err => {
-    const image = loadImage('images/example-image.jpeg', () => {
+    const image = loadImage('images/example.jpeg', () => {
       video = image
       oCanvas.width  = image.width
       oCanvas.height = image.height
@@ -27,29 +30,24 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: false })
     })
   })
 
-function draw() {
+async function draw() {
   useContext(oCtx)
   drawImage(video, 0, 0, oCanvas.width, oCanvas.height)
 
-  let newImage = pixelateImage(oCanvas, 0.15)
+  // Lower the resolution
+  let newImage = pixelateImage(oCanvas, 0.16)
   newImage.onload = () => {
-    newImage = decreasePalette(newImage, 58)
+    // Decrease color space
+    newImage = decreasePalette(newImage, 48)
     newImage.onload = () => {
+      // Set new palette, currently unused
       newImage = usePalette(newImage, [])
       newImage.onload = () => {
+        // Draw the result image scaled to screen
+        const scale = height / oCanvas.height
         useContext(ctx)
         background('#000')  
-
-        const scale = height / oCanvas.height
-        const imageCenter = getPixelsClusterCenter(newImage, 192, 192, 96, 10000)
-
-        imageCenter[0] *= oCanvas.width * scale / newImage.width
-        imageCenter[1] *= oCanvas.height * scale / newImage.height
-
-        const offsetX = oCanvas.width * scale * 0.5 - imageCenter[0]
-        const offsetY = oCanvas.height * scale * 0.5 - imageCenter[1]
-        drawImage(newImage, offsetX + (width - oCanvas.width * scale) / 2, offsetY, oCanvas.width * scale, oCanvas.height * scale)
-
+        drawImage(newImage, (width - oCanvas.width * scale) / 2, 0, oCanvas.width * scale, oCanvas.height * scale)
         draw()
       }
     }
