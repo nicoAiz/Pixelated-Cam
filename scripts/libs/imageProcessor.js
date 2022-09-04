@@ -4,7 +4,7 @@
 // v0.0.1 [03/09/2022]
 // - Initial state
 
-function iP_forEachPixel(img, callback) {
+async function iP_forEachPixel(img, callback) {
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
   canvas.width = img.width
@@ -17,10 +17,15 @@ function iP_forEachPixel(img, callback) {
     [d[i], d[i + 1], d[i + 2], d[i + 3]] = callback([d[i], d[i + 1], d[i + 2], d[i + 3]], i)
 
   ctx.putImageData(imageData, 0, 0)
-  return loadImage(canvas.toDataURL())
+  
+  return new Promise((resolve, reject) => {
+    const image = loadImage(canvas.toDataURL(), () => {
+      resolve(image)
+    })
+  })
 }
 
-function iP_pixelateImage(img, rez) {
+async function iP_pixelateImage(img, rez) {
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
   canvas.width = img.width * rez
@@ -32,8 +37,9 @@ function iP_pixelateImage(img, rez) {
   return newImg
 }
 
-function iP_removeColor(img, r = 0, g = 255, b = 0, threshold = 10) {
+async function iP_removeColor(img, r = 0, g = 255, b = 0, threshold = 10) {
   const thresholdSquared = threshold * threshold
+  
   return iP_forEachPixel(img, p => {
     if ((p[0] - r)**2 + (p[1] - g)**2 + (p[2] - b)**2 <= thresholdSquared)
       p[3] = 0
@@ -41,7 +47,7 @@ function iP_removeColor(img, r = 0, g = 255, b = 0, threshold = 10) {
   })
 }
 
-function iP_decreasePalette(img, colors) {
+async function iP_decreasePalette(img, colors) {
   return iP_forEachPixel(img, p => {
     p[0] = Math.floor(p[0] / colors) * colors
     p[1] = Math.floor(p[1] / colors) * colors
@@ -50,7 +56,7 @@ function iP_decreasePalette(img, colors) {
   })
 }
 
-function iP_usePalette(img, palette) {
+async function iP_usePalette(img, palette) {
   return iP_forEachPixel(img, p => {
     let closestColor = null
     let closestDistance = 999999
@@ -76,6 +82,7 @@ function iP_usePalette(img, palette) {
 function iP_getPixelsCluster(img, r, g, b, threshold) {
   const pixelsFound = []
   const thresholdSquared = threshold * threshold
+
   iP_forEachPixel(img, (p, i) => {
     if ((p[0] - r)**2 + (p[1] - g)**2 + (p[2] - b)**2 <= thresholdSquared)
       pixelsFound.push([(i / 4) % img.width, floor(i / 4 / img.width)])
