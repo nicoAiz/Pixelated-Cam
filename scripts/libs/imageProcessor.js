@@ -14,9 +14,32 @@ async function iP_forEachPixel(image, callback) {
   ctx.drawImage(image, 0, 0)
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
   let d = imageData.data
+  let dd = d.slice()
 
   for (let i = 0; i < d.length; i += 4)
-    [d[i], d[i + 1], d[i + 2], d[i + 3]] = callback([d[i], d[i + 1], d[i + 2], d[i + 3]], i)
+    [d[i], d[i + 1], d[i + 2], d[i + 3]] = callback([d[i], d[i + 1], d[i + 2], d[i + 3]], i, dd)
+
+  ctx.putImageData(imageData, 0, 0)
+  
+  return new Promise((resolve, reject) => {
+    const image = loadImage(canvas.toDataURL(), () => {
+      resolve(image)
+    })
+  })
+}
+
+async function iP_forEachPixelNormalized(image, callback) {
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  canvas.width = image.width
+  canvas.height = image.height
+  ctx.drawImage(image, 0, 0)
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+  let d = imageData.data
+  let dd = d.slice()
+
+  for (let i = 0; i < d.length; i += 4)
+    [d[i], d[i + 1], d[i + 2], d[i + 3]] = callback([d[i] / 255, d[i + 1] / 255, d[i + 2] / 255, d[i + 3] / 255], i, dd).map(c => c * 255) ?? [d[i], d[i + 1], d[i + 2], d[i + 3]]
 
   ctx.putImageData(imageData, 0, 0)
   
