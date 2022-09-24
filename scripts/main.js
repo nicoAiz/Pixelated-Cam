@@ -3,13 +3,14 @@ let width  = canvas.width
 let height = canvas.height
 
 let source = document.createElement('video')
-const oCanvas = document.createElement('canvas')
-const oCtx = oCanvas.getContext('2d')
+const oCanvas = document.createElement('canvas') // off screen canvas
+const oCtx = oCanvas.getContext('2d')            // off screen canvas' context
 let resultImage
 
 // Palette to be used in the result image
-const palette = [[222,57,95],[176,230,38],[222,45,84],[44,155,128],[37,178,72],[190,170,172],[86,139,213],[185,253,189],[85,8,63],[134,64,154],[195,232,40],[114,140,55],[115,178,74],[195,96,115],[69,69,248],[86,37,243],[43,114,134],[99,24,221],[140,228,180],[76,64,11],[164,180,37],[15,47,112],[147,130,13],[113,152,9],[197,6,244],[24,196,123],[175,254,252],[199,253,215],[98,19,241],[147,196,102],[201,202,72],[247,52,230],[167,0,68],[236,253,235],[200,115,44],[100,58,172],[63,150,222],[116,52,198],[165,12,217],[179,193,60],[144,98,129],[84,222,248],[233,133,29],[173,224,12],[108,150,11],[173,215,13],[52,39,33],[207,252,39],[85,211,198],[214,95,193],[251,177,119],[36,0,244],[151,235,139],[195,229,13],[74,91,121],[154,123,127],[142,55,130],[228,127,152],[18,83,213],[145,61,0],[199,18,117],[171,185,177],[219,187,190],[132,188,137]]
-const palette2 = new Array(64).fill([0, 0, 0]).map(i => i.map(c => random(255)))
+const palettes = [
+  [],
+]
 
 // Use webcam as source for effect
 // otherwise, use example.jpeg
@@ -55,14 +56,23 @@ downloadImage.addEventListener('click', () => {
   anchor.click()
 })
 
+let processor = (pixel, i, pixels) => {
+  pixel[0] *= 1
+  pixel[1] *= 1
+  pixel[2] *= 1
+  return pixel
+}
+
 async function draw() {
   useContext(oCtx)
   drawImage(source, 0, 0, oCanvas.width, oCanvas.height)
 
   resultImage = oCanvas
-  resultImage = await iP_pixelateImage(resultImage, 100) // Lower the resolution to maximum n pixels
-  // resultImage = await iP_decreasePalette(resultImage, 1) // 'Snap' colors to a palette of size n
-  resultImage = await iP_usePalette(resultImage, palette) // 'Snap' colors to a palette, currently unused
+  resultImage = await iP_pixelateImage(resultImage, 200) // Change the resolution to maximum n pixels
+  resultImage = await iP_decreasePalette(resultImage, 2) // Snap colors' components to a value multiple of n
+  resultImage = await iP_usePalette(resultImage, palettes[0]) // Use a palette for the colors of the image
+  resultImage = await iP_forEachPixelNormalized(resultImage, processor)
+  // resultImage = await iP_decreasePalette(resultImage, 32)
 
   // Scaling canvas properly to the screen
   canvas.width  = innerWidth
@@ -77,5 +87,6 @@ async function draw() {
   useContext(ctx)
   background('#000')  
   drawImage(resultImage, 0, 0, width, height)
-  draw()
+
+  requestAnimationFrame(draw)
 }
