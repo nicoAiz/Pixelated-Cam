@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pixel Art Cam</title>
+  <link rel="stylesheet" href="css/style.css">
+
+  <script src="scripts/libs/utils.js" defer></script>
+  <script src="scripts/libs/canvasUtils.js" defer></script>
+  <script src="scripts/libs/imageProcessor.js" defer></script>
+  <script src="scripts/libs/input.js" defer></script>
+  
+  <script src="scripts/main.js" defer></script>
+</head>
+<body>
+  <div id="actions">
+    <label for="upload-image" class="btn-action">
+      <img class="icon-small" src="icons/picture.svg"></img></label>
+      <input type="file" name="upload-image" id="upload-image" accept="image/png, image/gif, image/jpeg"></input>
+    </label>
+    <label for="download-image" class="btn-action">
+      <img class="icon" src="icons/download.svg"></img></label>
+      <input type="button" name="download-image" id="download-image"></input>
+    </label>
+    <label for="turn-camera" class="btn-action">
+      <img class="icon-small" src="icons/refresh.svg"></img></label>
+      <input type="button" name="turn-camera" id="turn-camera"></input>
+    </label>
+  </div>
+  <div class="flash"></div>
+</body>
+</html>
